@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: webnodb
-        image: aarbey/chal1:v2
+        image: aarbey/chal1:v3
         ports:
         - containerPort: 5000
         resources:
