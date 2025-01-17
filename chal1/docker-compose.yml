@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  flask_app:
+    image: aarbey/chal1:v2
+    container_name: flask_container_chal1
+    environment:
+      - FLASK_APP=./chal1.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_RUN_PORT=5000
+    ports:
+      - "5000:5000"
+
+

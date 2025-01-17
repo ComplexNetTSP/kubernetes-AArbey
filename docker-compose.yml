@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb_container_chal4
+    restart: always
+    command: mongod
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    networks:
+      - web_network
+    volumes:
+      - mongo_data:/data/db
+
+  flask_app_db:
+    image: aarbey/chal3:v2
+    container_name: flask_container_chal4_with_db
+    ports:
+      - "5001:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - web_network
+    environment:
+      - MONGO_URI=mongodb://root:example@mongodb:27017/
+      - FLASK_APP=./chal3/chal3.py
+    volumes:
+      - .:/app
+
+  flask_app_no_db:
+    image: aarbey/chal1:v2
+    container_name: flask_container_chal4_no_db
+    ports:
+      - "5002:5000"
+    networks:
+      - web_network
+    environment:
+      - FLASK_APP=./chal1/chal1.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_RUN_PORT=5000
+    volumes:
+      - .:/app
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_load_balancer
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - flask_app_db
+      - flask_app_no_db
+    networks:
+      - web_network
+
+networks:
+  web_network:
+    driver: bridge
+
+volumes:
+  mongo_data:

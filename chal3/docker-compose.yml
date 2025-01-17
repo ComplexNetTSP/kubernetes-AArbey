@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb_container_chal3
+    restart: always
+    command: mongod
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    networks:
+      - web_network
+    volumes:
+      - mongo_data:/data/db
+
+  flask_app:
+    image: aarbey/chal3:v2
+    container_name: flask_container_chal3
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - web_network
+    environment:
+      - MONGO_URI=mongodb://root:example@mongodb:27017/
+      - FLASK_APP=chal3.py
+    volumes:
+      - .:/app
+
+
+
+networks:
+  web_network:
+    driver: bridge
+
+volumes:
+  mongo_data:
