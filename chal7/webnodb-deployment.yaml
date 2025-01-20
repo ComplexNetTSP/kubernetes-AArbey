@@ -1,90 +1,36 @@
-# Deployment for mongodb
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongodb
+  name: webnodb
   namespace: aarbey
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: webnodb
   template:
     metadata:
       labels:
-        app: mongodb
+        app: webnodb
     spec:
       containers:
-      - name: mongodb
-        image: mongo:5.0
-        ports:
-        - containerPort: 27017
-        resources:
-          requests:
-            memory: "100Mi"
-            cpu: "100m"
-          limits:
-            memory: "200Mi"
-            cpu: "200m"
----
-# Service for mongodb
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongodb-service
-  namespace: aarbey
-spec:
-  selector:
-    app: mongodb
-  ports:
-  - protocol: TCP
-    port: 27017
-    targetPort: 27017
-  type: ClusterIP
----
-# Deployment for webdb
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webdb
-  namespace: aarbey
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: webdb
-  template:
-    metadata:
-      labels:
-        app: webdb
-    spec:
-      containers:
-      - name: webdb
-        image: aarbey/webdb:v1
-        env:
-        - name: MONGO_URI
-          value: mongodb://mongodb-service:27017
+      - name: webnodb
+        image: aarbey/chal1:v3
         ports:
         - containerPort: 5000
         resources:
-          requests:
-            memory: "100Mi"
-            cpu: "100m"
-          limits:
+@@ -26,14 +74,15 @@ spec:
             memory: "200Mi"
             cpu: "200m"
 ---
-# Service for webdb
 apiVersion: v1
 kind: Service
 metadata:
-  name: webdb-service
+  name: webnodb-service
   namespace: aarbey
 spec:
   selector:
-    app: webdb
+    app: webnodb
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 5000
-  type: ClusterIP
