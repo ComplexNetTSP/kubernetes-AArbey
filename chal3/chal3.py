@@ -27,3 +27,13 @@ def hello_world():
         serveur=request.base_url,
         records=last_records
     )
+
+
+@app.route("/health")
+def health():
+    try:
+        # Check MongoDB connection
+        db.command("ping")
+        return "OK", 200
+    except Exception as e:
+        return f"Database error: {e}", 500
