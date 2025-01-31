@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webdb
+  namespace: {{ .Values.namespace }}
+
+spec:
+  replicas: {{ .Values.webdb.replicas }}
+  selector:
+    matchLabels:
+      app: webdb
+  template:
+    metadata:
+      labels:
+        app: webdb
+    spec:
+      containers:
+      - name: webdb
+        image: {{ .Values.webdb.image }}
+        env:
+        - name: MONGO_URI
+          value: {{ .Values.webdb.mongoUri }}
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: {{ .Values.webdb.resources.requests.memory }}
+            cpu: {{ .Values.webdb.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.webdb.resources.limits.memory }}
+            cpu: {{ .Values.webdb.resources.limits.cpu }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 5

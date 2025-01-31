@@ -1,0 +1,49 @@
+mongodb:
+  replicas: 1
+  image: mongo:5.0
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "100m"
+    limits:
+      memory: "200Mi"
+      cpu: "200m"
+
+webdb:
+  replicas: 3
+  image: aarbey/chal9-webdb:v1
+  mongoUri: mongodb://mongodb-service:27017
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "100m"
+    limits:
+      memory: "200Mi"
+      cpu: "200m"
+
+webnodb:
+  replicas: 1
+  image: aarbey/chal1:v3
+  resources:
+    requests:
+      memory: "200Mi"
+      cpu: "200m"
+
+namespace: aarbey
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: webnodb.aarbey.net4255.luxbulb.org
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: webnodb-service
+          servicePort: 80
+    - host: webdb.aarbey.net4255.luxbulb.org
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: webdb-service
+          servicePort: 80
